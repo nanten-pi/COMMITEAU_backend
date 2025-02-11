@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-//POSTできたりするように（おまじない）
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -22,7 +21,8 @@ const db = new sqlite3.Database("./main.db", (err) => {
                 name text, \
                 longitude integer, \
                 latitude integer, \
-                altitude integer \
+                altitude integer, \
+                description text \
             )", (err) => {
                 if (err) {
                     console.error("table error: " + err.message);
@@ -70,8 +70,8 @@ app.get("/", (req, res) => {
 //create
 app.post("/lists", (req, res) => {
     const reqBody = req.body;
-    const stmt = db.prepare("insert into lists(name,longitude,latitude,altitude) values(?,?,?,?)"); //lastID取得のため
-    stmt.run(reqBody.name, reqBody.longitude, reqBody.latitude, reqBody.altitude, (err, result) => { //lambda式を使うとthis.lastIDでは取得できない
+    const stmt = db.prepare("insert into lists(name,longitude,latitude,altitude,description) values(?,?,?,?,?)"); //lastID取得のため
+    stmt.run(reqBody.name, reqBody.longitude, reqBody.latitude, reqBody.altitude, reqBody.description, (err, result) => { //lambda式を使うとthis.lastIDでは取得できない
         if (err) {
             res.status(400).json({
                 "status": "error",
